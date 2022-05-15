@@ -1,9 +1,71 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const { User } = require('../models')
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken');
+const authenticateToken = require('../service/auth')
+const {sendConfirmationEmail} = require('../service/sendMail')
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+router.get('/', authenticateToken, async function (req, res, next) {
+  try {
+    sendConfirmationEmail('tirta','tirtadev01@gmail.com','0201')
+    const data = await User.findAll()
+    res.json({ message: 'Berhasil mengambil data', data });
+  } catch (err) {
+    res.json(err.message)
+  }
+});
+router.post('/register', async function (req, res, next) {
+  try {
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(req.body.password, salt);
+
+    const oldUser = await User.findOne({
+      where: {
+        email: req.body.email
+      }
+    });
+    if (oldUser) {
+      return res.status(409).send("User Already Exist. Please Login");
+    }
+
+    const data = await User.create({
+      username: req.body.username,
+      email: req.body.email,
+      password: hash,
+    })
+
+    const token = await jwt.sign({ data }, process.env.JWT_SECRET, { expiresIn: 60 * 60 });
+
+    // send mail
+    sendConfirmationEmail(data.username,data.email,'0201')
+
+    res.json({ message: 'Registrasi berhasil', token });
+  } catch (err) {
+    res.json(err.message)
+  }
+});
+
+router.post('/login', async function (req, res, next) {
+  try {
+    const user = await User.findOne({
+      where: {
+        email: req.body.email
+      }
+    })
+    if (!user) return res.status(404).json({ message: 'Email tidak ditemukan!' })
+
+    const checkPw = await bcrypt.compareSync(req.body.password, user.password);
+    if (!checkPw) return res.status(404).json({ message: 'Password yang anda masukan salah!' })
+
+    const token = await jwt.sign({ user }, process.env.JWT_SECRET, { expiresIn: 60 * 60 });
+
+    res.cookie('token',token)
+    res.json({ message: 'Login berhasil', token });
+  } catch (err) {
+    res.json(err.message)
+  }
 });
 
 module.exports = router;
