@@ -1,38 +1,29 @@
+'use strict';
+const {
+  Model
+} = require('sequelize');
+const  Profile  = require('../models')
 
 module.exports = (sequelize, DataTypes) => {
-    const User = sequelize.define('User', {
-        id: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            allowNull: false,
-            autoIncrement: true
-        },
-        username: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        email: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        password: {
-            type: DataTypes.TEXT,
-            allowNull: false
-        },
-        createdAt: {
-            allowNull: false,
-            type: DataTypes.DATE,
-            defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
-        },
-        updatedAt: {
-            allowNull: false,
-            type: DataTypes.DATE,
-            defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
-        }
-    }, {
-        tableName: 'users',
-        timeStamps: false
-    })
+  class User extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static associate(models) {
+      // define association here
+      User.belongsTo(Profile, { foreignKey: 'user_id'});
+    }
+  }
+  User.init({
+    username: DataTypes.STRING,
+    email: DataTypes.STRING,
+    password: DataTypes.TEXT
+  }, {
+    sequelize,
+    modelName: 'User',
+  });
 
-    return User;
-}
+  return User;
+};

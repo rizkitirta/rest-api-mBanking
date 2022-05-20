@@ -6,16 +6,7 @@ const jwt = require('jsonwebtoken');
 const authenticateToken = require('../service/auth')
 const {sendConfirmationEmail} = require('../service/sendMail')
 
-/* GET users listing. */
-router.get('/', authenticateToken, async function (req, res, next) {
-  try {
-    sendConfirmationEmail('tirta','tirtadev01@gmail.com','0201')
-    const data = await User.findAll()
-    res.json({ message: 'Berhasil mengambil data', data });
-  } catch (err) {
-    res.json(err.message)
-  }
-});
+
 router.post('/register', async function (req, res, next) {
   try {
     const salt = bcrypt.genSaltSync(10);
