@@ -24,6 +24,7 @@ app.use(cors());
 app.use('/', indexRouter);
 app.use('/authentication', authRouter);
 app.use('/user', userRouter);
-app.use('/rekening', saldoRouter);
+app.use('/rekening', rekeningRouter);
+app.use('/saldo', saldoRouter);
 
 module.exports = app;

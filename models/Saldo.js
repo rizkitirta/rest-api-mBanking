@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
             })
         }
     }
+
     Saldo.init({
         id: {
             type: DataTypes.INTEGER,
@@ -40,5 +41,12 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DATE,
             defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
         }
+    }, {
+        sequelize,
+        freezeTableName: 'saldo',
+        modelName: 'Saldo',
+        tableName: 'saldo'
     })
+
+    return Saldo;
 }

@@ -13,13 +13,38 @@ router.get('/', async function (req, res, next) {
     }
 })
 
+router.put('/:id', authenticateToken, async function (req, res, next) {
+    try {
+        const userId = req.user.user.id;
+        const rekening = await Rekening.findByPk(req.params.id);
+
+        if (!rekening) return res.json({ success: false, message: 'Rekening tidak ditemukan!' });
+
+        const data = await rekening.update({
+            'status': req.body.status,
+            'type': req.body.type,
+            'nama': req.body.nama,
+            'nama_alias': req.body.nama_alias,
+            'alamat': req.body.alamat,
+        })
+
+        res.json({ message: 'Berhasil mengupdate data', data });
+    } catch (err) {
+        res.json({ message: 'Gagal mengupdate data' });
+        console.log(err)
+    }
+})
+
 router.post('/', authenticateToken, async function (req, res, next) {
     try {
         const userId = req.user.user.id;
+        const noRekening = Math.floor(Math.random() * 1000000000000);
+        const noKartu = Math.floor(Math.random() * 1000000000);
+
         const data = await Rekening.create({
             'user_id': userId,
-            'no_rekening': req.body.no_rekening,
-            'no_kartu': req.body.no_kartu,
+            'no_rekening': noRekening,
+            'no_kartu': noKartu,
             'status': req.body.status,
             'type': req.body.type,
             'nama': req.body.nama,
@@ -28,9 +53,9 @@ router.post('/', authenticateToken, async function (req, res, next) {
             'tanggal_pembuatan': Date.now(),
         })
 
-        res.json({ message: 'Berhasil mengambil data', data });
+        res.json({ message: 'Berhasil membuat data', data });
     } catch (err) {
-        res.json({ message: 'Gagal mengambil data' });
+        res.json({ message: 'Gagal membuat data' });
         console.log(err)
     }
 })
