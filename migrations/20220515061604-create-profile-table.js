@@ -39,6 +39,14 @@ module.exports = {
          type: Sequelize.STRING,
          allowNull: true
        },
+       kode_aktivasi: {
+         type: Sequelize.STRING,
+         allowNull: true
+       },
+       is_active: {
+         type: Sequelize.BOOLEAN,
+         defaultValue: false
+       },
        tanggal_lahir: {
          type: Sequelize.DATE,
          allowNull: true,

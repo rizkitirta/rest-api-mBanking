@@ -27,7 +27,8 @@ router.get('/', authenticateToken, async function (req, res, next) {
             total_item: Math.ceil(data.count),
         });
     } catch (err) {
-        res.json(err.message)
+        console.log(err)
+        res.json({ success: false, message: 'Gagal mengambil data' });
     }
 });
 router.get('/:id', authenticateToken, async function (req, res, next) {
@@ -41,7 +42,33 @@ router.get('/:id', authenticateToken, async function (req, res, next) {
 
         res.json({ message: 'Berhasil mengambil data', data });
     } catch (err) {
-        res.json(err.message)
+        console.log(err)
+        res.json({ success: false, message: 'Gagal mengambil data' });
+    }
+});
+router.post('/aktivasi', authenticateToken, async function (req, res, next) {
+    try {
+        const user = await User.findOne({
+            where: {
+                email: req.body.email,
+            }
+        })
+        if (!user) return res.json({ success: false, message: 'Email tidak ditemukan!' });
+
+        const profile = await Profile.findOne({
+            where: {
+                kode_aktivasi: req.body.kode,
+                user_id: user.id,
+            }
+        })
+
+        if (!profile) return res.json({ success: false, message: 'Kode Aktivasi tidak ditemukan!' });
+        const data = await profile.update({ is_active: true })
+
+        res.json({ message: 'Aktivasi akun berhasil' });
+    } catch (err) {
+        console.log(err)
+        res.json({ success: false, message: 'Aktivasi akun gagal' });
     }
 });
 router.get('/detail/:id', authenticateToken, async function (req, res, next) {
@@ -65,7 +92,7 @@ router.get('/detail/:id', authenticateToken, async function (req, res, next) {
         res.json({ message: 'Berhasil mengambil data', data });
     } catch (err) {
         console.log(err)
-        res.json(err)
+        res.json({ success: false, message: 'Gagal mengambil data' });
     }
 });
 
@@ -84,7 +111,8 @@ router.post('/profile', authenticateToken, async (req, res, next) => {
         })
         res.json({ message: "Berhasil menambah profile", data })
     } catch (err) {
-        res.send(err)
+        console.log(err)
+        res.json({ success: false, message: 'Gagal mengambil data' });
     }
 })
 

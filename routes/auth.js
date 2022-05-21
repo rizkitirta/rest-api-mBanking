@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { User } = require('../models')
+const { User, Profile } = require('../models')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken');
 const authenticateToken = require('../service/auth')
@@ -27,10 +27,16 @@ router.post('/register', async function (req, res, next) {
       password: hash,
     })
 
+    const profile = await Profile.create({
+      user_id: data.id,
+      is_active: false,
+      kode_aktivasi: Math.floor(Math.random() * 100000)
+    })
+
     const token = await jwt.sign({ data }, process.env.JWT_SECRET, { expiresIn: 60 * 60 });
 
     // send mail
-    sendConfirmationEmail(data.username,data.email,'0201')
+    sendConfirmationEmail(data.username,data.email,profile.kode_aktivasi)
 
     res.json({ message: 'Registrasi berhasil', token });
   } catch (err) {

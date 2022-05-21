@@ -28,6 +28,10 @@ module.exports = {
         type: Sequelize.DataTypes.TEXT,
         allowNull: false
       },
+      status: {
+        type: Sequelize.DataTypes.STRING,
+        allowNull: false
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

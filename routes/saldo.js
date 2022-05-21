@@ -1,8 +1,10 @@
 const express = require('express');
 const { Saldo, Rekening } = require('../models');
 const router = express.Router()
+const authenticateToken = require('../service/auth')
+const mutasiRekening = require('../service/mutasi');
 
-router.get('/', async function (req, res, next) {
+router.get('/', authenticateToken, async function (req, res, next) {
     try {
         const data = await Saldo.findAll()
         res.json({ success: true, message: 'Berhasil mengambil data', data });
@@ -11,7 +13,7 @@ router.get('/', async function (req, res, next) {
         res.json({ success: false, message: 'gagal mengambil data' });
     }
 })
-router.get('/:noRek', async function (req, res, next) {
+router.get('/:noRek', authenticateToken, async function (req, res, next) {
     try {
         const rekening = await Rekening.findOne({
             where: {
@@ -33,7 +35,7 @@ router.get('/:noRek', async function (req, res, next) {
         res.json({ success: false, message: 'gagal mengambil data' });
     }
 })
-router.post('/topup/', async function (req, res, next) {
+router.post('/topup/', authenticateToken, async function (req, res, next) {
     try {
         const rekening = await Rekening.findOne({
             where: {
@@ -48,10 +50,13 @@ router.post('/topup/', async function (req, res, next) {
                 rekening_id: rekening.id,
             }
         });
-        const data = await saldo.update({
+        const data = await saldo.increment({
             'saldo': req.body.saldo,
-        })
-        res.json({ success: true, message: 'Topup Berhasil', data });
+        }).
+
+            // LOG MUTASI
+            mutasiRekening(rekening.id, req.body.saldo, 'DEBET', 'TOPUP')
+        res.json({ success: true, message: 'Topup Berhasil' });
     } catch (err) {
         console.log(err)
         res.json({ success: false, message: 'Topup gagal!' });
@@ -94,6 +99,10 @@ router.post('/transfer/', async function (req, res, next) {
         const data2 = await saldoFrom.increment({
             'saldo': -req.body.saldo,
         })
+
+        // LOG MUTASI REKENING
+        mutasiRekening(rekeningTo.id, req.body.saldo, 'DEBET', `Transfer dari `+ rekeningFrom.nama)
+        mutasiRekening(rekeningFrom.id, req.body.saldo, 'KREDIT', 'Transfer ke ' + rekeningTo.nama)
 
         res.json({ success: true, message: 'Transfer Berhasil' });
     } catch (err) {
