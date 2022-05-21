@@ -1,6 +1,24 @@
+'use strict';
+const {
+    Model
+} = require('sequelize');
+const User = require('../models')
 
 module.exports = (sequelize, DataTypes) => {
-    const Profile = sequelize.define('Profile', {
+    class Profile extends Model {
+        /**
+         * Helper method for defining associations.
+         * This method is not a part of Sequelize lifecycle.
+         * The `models/index` file will call this method automatically.
+         */
+        static associate(models) {
+            // define association here
+              Profile.belongsTo(models.User,{
+                foreignKey: 'id',
+              });
+        }
+    }
+    Profile.init({
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -46,13 +64,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true,
         },
     }, {
+        sequelize,
+        modelName: 'Profile',
         tableName: 'profile',
-        classMethods: {
-            associate: function (models) {
-                Profile.belongsTo(models.User, {foreignKey: 'id'});
-            }
-        }
-    })
+        freezeTableName: 'profile',
+    });
 
     return Profile;
-}
+};

@@ -8,6 +8,8 @@ var cors = require('cors');
 var indexRouter = require('./routes/index');
 var authRouter = require('./routes/auth');
 var userRouter = require('./routes/user');
+var rekeningRouter = require('./routes/rekening');
+var saldoRouter = require('./routes/saldo');
 
 var app = express();
 
@@ -22,5 +24,6 @@ app.use(cors());
 app.use('/', indexRouter);
 app.use('/authentication', authRouter);
 app.use('/user', userRouter);
+app.use('/rekening', saldoRouter);
 
 module.exports = app;

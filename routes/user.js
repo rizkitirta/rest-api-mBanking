@@ -1,7 +1,7 @@
 const { response } = require('express');
 const express = require('express')
 const router = express.Router()
-const { Profile, User } = require('../models')
+const { Profile, User, Rekening } = require('../models');
 const authenticateToken = require('../service/auth')
 
 /* GET users listing. */
@@ -52,9 +52,19 @@ router.get('/detail/:id', authenticateToken, async function (req, res, next) {
             where: {
                 id: req.params.id
             },
+            include: [
+                Profile,
+                {
+                    model: Rekening,
+                    attributes: ['id', 'no_rekening', 'no_kartu', 'status', 'type', 'nama', 'nama_alias', 'alamat', 'tanggal_pembuatan'],
+                    where: {
+                        status: 'AKTIF'
+                    }
+                }],
         })
         res.json({ message: 'Berhasil mengambil data', data });
     } catch (err) {
+        console.log(err)
         res.json(err)
     }
 });
