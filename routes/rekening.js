@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { Rekening, User } = require('../models')
+const { Rekening, User, Saldo } = require('../models')
 const authenticateToken = require('../service/auth')
 
 router.get('/', async function (req, res, next) {
@@ -8,16 +8,14 @@ router.get('/', async function (req, res, next) {
         const data = await Rekening.findAll()
         res.json({ message: 'Berhasil mengambil data', data });
     } catch (err) {
-        res.json({ message: 'Gagal mengambil data' });
         console.log(err)
+        res.json({ message: 'Gagal mengambil data' });
     }
 })
 
 router.put('/:id', authenticateToken, async function (req, res, next) {
     try {
-        const userId = req.user.user.id;
         const rekening = await Rekening.findByPk(req.params.id);
-
         if (!rekening) return res.json({ success: false, message: 'Rekening tidak ditemukan!' });
 
         const data = await rekening.update({
@@ -30,8 +28,8 @@ router.put('/:id', authenticateToken, async function (req, res, next) {
 
         res.json({ message: 'Berhasil mengupdate data', data });
     } catch (err) {
-        res.json({ message: 'Gagal mengupdate data' });
         console.log(err)
+        res.json({ message: 'Gagal mengupdate data' });
     }
 })
 
@@ -53,10 +51,15 @@ router.post('/', authenticateToken, async function (req, res, next) {
             'tanggal_pembuatan': Date.now(),
         })
 
+        Saldo.create({
+            'rekening_id': data.id,
+            'saldo': req.body.saldo_awal,
+        })
+
         res.json({ message: 'Berhasil membuat data', data });
     } catch (err) {
-        res.json({ message: 'Gagal membuat data' });
         console.log(err)
+        res.json({ message: 'Gagal membuat data' });
     }
 })
 router.get('/:id', authenticateToken, async function (req, res, next) {
@@ -73,8 +76,8 @@ router.get('/:id', authenticateToken, async function (req, res, next) {
 
         res.json({ success: true, message: 'Berhasil mengambil data', data });
     } catch (err) {
-        res.json({ message: 'Gagal mengambil data' });
         console.log(err)
+        res.json({ message: 'Gagal mengambil data' });
     }
 })
 router.get('/delete/:id', authenticateToken, async function (req, res, next) {
@@ -88,8 +91,8 @@ router.get('/delete/:id', authenticateToken, async function (req, res, next) {
 
         res.json({ success: true, message: 'Berhasil menghapus data' });
     } catch (err) {
-        res.send(err)
         console.log(err)
+        res.json({ message: 'Gagal mengambil data' });
     }
 })
 

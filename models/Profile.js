@@ -13,9 +13,9 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-              Profile.belongsTo(models.User,{
+            Profile.belongsTo(models.User, {
                 foreignKey: 'id',
-              });
+            });
         }
     }
     Profile.init({
@@ -47,7 +47,7 @@ module.exports = (sequelize, DataTypes) => {
         tanggal_lahir: {
             type: DataTypes.DATE,
             allowNull: true,
-            // defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
+            defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
         },
         tempat_lahir: {
             type: DataTypes.STRING,
@@ -55,12 +55,12 @@ module.exports = (sequelize, DataTypes) => {
         },
         createdAt: {
             type: DataTypes.DATE,
-            defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
+            // defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
             allowNull: true,
         },
         updatedAt: {
             type: DataTypes.DATE,
-            defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
+            // defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
             allowNull: true,
         },
     }, {

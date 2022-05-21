@@ -5,9 +5,9 @@ module.exports = (sequelize, DataTypes) => {
     class Rekening extends Model {
         static associate(models) {
             // define association here
-            Rekening.belongsTo(models.User,{
+            Rekening.belongsTo(models.User, {
                 foreignKey: 'id',
-              });
+            });
         }
     }
 
@@ -49,17 +49,17 @@ module.exports = (sequelize, DataTypes) => {
         tanggal_pembuatan: {
             allowNull: false,
             type: DataTypes.DATE,
-            defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
+            // defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
         },
         createdAt: {
             allowNull: false,
             type: DataTypes.DATE,
-            defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
+            // defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
         },
         updatedAt: {
             allowNull: false,
             type: DataTypes.DATE,
-            defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
+            // defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
         }
     }, {
         sequelize,
