@@ -100,8 +100,11 @@ router.post('/profile', authenticateToken, async (req, res, next) => {
     try {
         console.log(req.body)
         const id = req.user.user.id;
-        const data = await Profile.create({
-            user_id: id,
+        const profile = await Profile.findOne({where: {user_id: id}})
+
+        if(!profile) return res.json({success: false, message: 'Profile tidak ditemukan'});
+
+        const data = await profile.update({
             nik: req.body.nik,
             nama_depan: req.body.nama_depan,
             nama_belakang: req.body.nama_belakang,
